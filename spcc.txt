@@ -1,0 +1,1490 @@
+﻿Diffie Hellman:
+
+
+Python:
+
+
+p = int(input('Modulus?'))
+g = int(input('Primitive?'))
+a = int(input("Alice Private Key"))
+b = int(input("Bob Private Key"))
+R1 = (g**a)%p
+R2 = (g**b)%p
+K1 = (R2**a)%p
+K2 = (R1**b)%p
+
+
+print("K1=K2?", K1==K2)
+print("The shared private key is", K1)
+
+
+
+
+Man in the middle 
+
+
+Python:
+
+
+p = int(input('Modulus?'))
+g = int(input('Primitive?'))
+a = int(input("Alice Private Key"))
+b = int(input("Bob Private Key"))
+e = int(input("Eve Private Key"))
+R1 = (g**a)%p
+R2 = (g**b)%p
+Z = (g**e)%p
+K1 = (Z**a)%p
+K2 = (Z**b)%p
+
+
+KA = (R1**e)%p
+KB = (R2**e)%p
+
+
+print("K1=K2?", K1==K2)
+print("K1:", K1)
+print("K2:", K2)
+
+
+print("KA:", KA)
+print("KB:", KB)
+
+
+
+
+
+
+Additive:
+ C++:
+
+
+#include <iostream>
+#include <string>
+
+
+using namespace std;
+
+
+string encrypt(string plaintext, int key) {
+    string ciphertext = "";
+    for (int i = 0; i < plaintext.length(); ++i) {
+        if (isalpha(plaintext[i])) {
+            char shifted = plaintext[i] + key;
+            if (isupper(plaintext[i]) && shifted > 'Z')
+                shifted -= 26;
+            else if (islower(plaintext[i]) && shifted > 'z')
+                shifted -= 26;
+            ciphertext += shifted;
+        } else {
+            ciphertext += plaintext[i];
+        }
+    }
+    return ciphertext;
+}
+
+
+string decrypt(string ciphertext, int key) {
+    string plaintext = "";
+    for (int i = 0; i < ciphertext.length(); ++i) {
+        if (isalpha(ciphertext[i])) {
+            char shifted = ciphertext[i] - key;
+            if (isupper(ciphertext[i]) && shifted < 'A')
+                shifted += 26;
+            else if (islower(ciphertext[i]) && shifted < 'a')
+                shifted += 26;
+            plaintext += shifted;
+        } else {
+            plaintext += ciphertext[i];
+        }
+    }
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext;
+    int key;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+    
+    cout << "Enter key (an integer): ";
+    cin >> key;
+
+
+    string encrypted_text = encrypt(plaintext, key);
+    cout << "Encrypted text: " << encrypted_text << endl;
+
+
+    string decrypted_text = decrypt(encrypted_text, key);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+
+
+def encrypt(plaintext, key):
+    ciphertext = ""
+    for char in plaintext:
+        if char.isalpha():
+            shifted = chr((ord(char) - ord('a' if char.islower() else 'A') + key) % 26 + ord('a' if char.islower() else 'A'))
+            ciphertext += shifted
+        else:
+            ciphertext += char
+    return ciphertext
+
+
+def decrypt(ciphertext, key):
+    plaintext = ""
+    for char in ciphertext:
+        if char.isalpha():
+            shifted = chr((ord(char) - ord('a' if char.islower() else 'A') - key) % 26 + ord('a' if char.islower() else 'A'))
+            plaintext += shifted
+        else:
+            plaintext += char
+    return plaintext
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    key = int(input("Enter key (an integer): "))
+
+
+    encrypted_text = encrypt(plaintext, key)
+    print("Encrypted text:", encrypted_text)
+
+
+    decrypted_text = decrypt(encrypted_text, key)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+Multiplicative Cipher:
+C++:
+#include <iostream>
+#include <string>
+
+
+using namespace std;
+
+
+string encrypt(string plaintext, int key) {
+    string ciphertext = "";
+    for (int i = 0; i < plaintext.length(); ++i) {
+        if (isalpha(plaintext[i])) {
+            char shifted = (((plaintext[i] - 'A') * key) % 26) + 'A'; // Assuming uppercase English letters
+            ciphertext += shifted;
+        } else {
+            ciphertext += plaintext[i];
+        }
+    }
+    return ciphertext;
+}
+
+
+string decrypt(string ciphertext, int key) {
+    string plaintext = "";
+    int modInverse = 0;
+    for (int i = 0; i < 26; i++) {
+        if ((key * i) % 26 == 1) {
+            modInverse = i;
+            break;
+        }
+    }
+    for (int i = 0; i < ciphertext.length(); ++i) {
+        if (isalpha(ciphertext[i])) {
+            char shifted = (((ciphertext[i] - 'A') * modInverse) % 26) + 'A'; // Assuming uppercase English letters
+            plaintext += shifted;
+        } else {
+            plaintext += ciphertext[i];
+        }
+    }
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext;
+    int key;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+    
+    cout << "Enter key (an integer): ";
+    cin >> key;
+
+
+    string encrypted_text = encrypt(plaintext, key);
+    cout << "Encrypted text: " << encrypted_text << endl;
+
+
+    string decrypted_text = decrypt(encrypted_text, key);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def encrypt(plaintext, key):
+    ciphertext = ""
+    for char in plaintext:
+        if char.isalpha():
+            shifted = chr(((ord(char) - ord('A') if char.isupper() else ord(char) - ord('a')) * key % 26) + ord('A') if char.isupper() else ord('a'))
+            ciphertext += shifted
+        else:
+            ciphertext += char
+    return ciphertext
+
+
+def decrypt(ciphertext, key):
+    plaintext = ""
+    mod_inverse = 0
+    for i in range(26):
+        if (key * i) % 26 == 1:
+            mod_inverse = i
+            break
+    for char in ciphertext:
+        if char.isalpha():
+            shifted = chr(((ord(char) - ord('A') if char.isupper() else ord(char) - ord('a')) * mod_inverse % 26) + ord('A') if char.isupper() else ord('a'))
+            plaintext += shifted
+        else:
+            plaintext += char
+    return plaintext
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    key = int(input("Enter key (an integer): "))
+
+
+    encrypted_text = encrypt(plaintext, key)
+    print("Encrypted text:", encrypted_text)
+
+
+    decrypted_text = decrypt(encrypted_text, key)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+Affine
+C++:
+#include <iostream>
+#include <string>
+
+
+using namespace std;
+
+
+int modInverse(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1)
+            return x;
+    }
+    return -1;
+}
+
+
+string encrypt(string plaintext, int a, int b) {
+    string ciphertext = "";
+    for (int i = 0; i < plaintext.length(); ++i) {
+        if (isalpha(plaintext[i])) {
+            char shifted = ((a * (plaintext[i] - 'A') + b) % 26) + 'A'; // Assuming uppercase English letters
+            ciphertext += shifted;
+        } else {
+            ciphertext += plaintext[i];
+        }
+    }
+    return ciphertext;
+}
+
+
+string decrypt(string ciphertext, int a, int b) {
+    string plaintext = "";
+    int modInverseA = modInverse(a, 26);
+    if (modInverseA == -1) {
+        cout << "Invalid key, decryption not possible." << endl;
+        return plaintext;
+    }
+    for (int i = 0; i < ciphertext.length(); ++i) {
+        if (isalpha(ciphertext[i])) {
+            char shifted = ((modInverseA * (ciphertext[i] - 'A' - b + 26)) % 26) + 'A'; // Assuming uppercase English letters
+            plaintext += shifted;
+        } else {
+            plaintext += ciphertext[i];
+        }
+    }
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext;
+    int a, b;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+
+
+    cout << "Enter key (a and b, space-separated integers): ";
+    cin >> a >> b;
+
+
+    string encrypted_text = encrypt(plaintext, a, b);
+    cout << "Encrypted text: " << encrypted_text << endl;
+
+
+    string decrypted_text = decrypt(encrypted_text, a, b);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def mod_inverse(a, m):
+    a = a % m
+    for x in range(1, m):
+        if (a * x) % m == 1:
+            return x
+    return -1
+
+
+def encrypt(plaintext, a, b):
+    ciphertext = ""
+    for char in plaintext:
+        if char.isalpha():
+            shifted = chr(((a * (ord(char) - ord('A')) + b) % 26) + ord('A') if char.isupper() else ((a * (ord(char) - ord('a')) + b) % 26) + ord('a'))
+            ciphertext += shifted
+        else:
+            ciphertext += char
+    return ciphertext
+
+
+def decrypt(ciphertext, a, b):
+    plaintext = ""
+    mod_inverse_a = mod_inverse(a, 26)
+    if mod_inverse_a == -1:
+        print("Invalid key, decryption not possible.")
+        return plaintext
+    for char in ciphertext:
+        if char.isalpha():
+            shifted = chr(((mod_inverse_a * (ord(char) - ord('A') - b + 26)) % 26) + ord('A') if char.isupper() else ((mod_inverse_a * (ord(char) - ord('a') - b + 26)) % 26) + ord('a'))
+            plaintext += shifted
+        else:
+            plaintext += char
+    return plaintext
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    a, b = map(int, input("Enter key (a and b, space-separated integers): ").split())
+
+
+    encrypted_text = encrypt(plaintext, a, b)
+    print("Encrypted text:", encrypted_text)
+
+
+    decrypted_text = decrypt(encrypted_text, a, b)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+Autokey:
+C++:
+#include <iostream>
+#include <string>
+
+
+using namespace std;
+
+
+string encrypt(string plaintext, string key) {
+    string ciphertext = "";
+    for (int i = 0, j = 0; i < plaintext.length(); ++i) {
+        char shifted;
+        if (isalpha(plaintext[i])) {
+            if (isupper(plaintext[i])) {
+                shifted = ((plaintext[i] - 'A' + key[j % key.length()] - 'A') % 26) + 'A';
+            } else {
+                shifted = ((plaintext[i] - 'a' + key[j % key.length()] - 'a') % 26) + 'a';
+            }
+            j++;
+        } else {
+            shifted = plaintext[i];
+        }
+        ciphertext += shifted;
+    }
+    return ciphertext;
+}
+
+
+string decrypt(string ciphertext, string key) {
+    string plaintext = "";
+    for (int i = 0, j = 0; i < ciphertext.length(); ++i) {
+        char shifted;
+        if (isalpha(ciphertext[i])) {
+            if (isupper(ciphertext[i])) {
+                shifted = ((ciphertext[i] - 'A' - (key[j % key.length()] - 'A') + 26) % 26) + 'A';
+            } else {
+                shifted = ((ciphertext[i] - 'a' - (key[j % key.length()] - 'a') + 26) % 26) + 'a';
+            }
+            j++;
+        } else {
+            shifted = ciphertext[i];
+        }
+        plaintext += shifted;
+    }
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext, key;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+
+
+    cout << "Enter key (only alphabetic characters): ";
+    getline(cin, key);
+
+
+    string encrypted_text = encrypt(plaintext, key);
+    cout << "Encrypted text: " << encrypted_text << endl;
+
+
+    string decrypted_text = decrypt(encrypted_text, key);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def encrypt(plaintext, key):
+    ciphertext = ""
+    key_index = 0
+    for char in plaintext:
+        if char.isalpha():
+            if char.isupper():
+                shifted = chr(((ord(char) - ord('A') + ord(key[key_index % len(key)].upper()) - ord('A')) % 26) + ord('A'))
+            else:
+                shifted = chr(((ord(char) - ord('a') + ord(key[key_index % len(key)].lower()) - ord('a')) % 26) + ord('a'))
+            key_index += 1
+        else:
+            shifted = char
+        ciphertext += shifted
+    return ciphertext
+
+
+def decrypt(ciphertext, key):
+    plaintext = ""
+    key_index = 0
+    for char in ciphertext:
+        if char.isalpha():
+            if char.isupper():
+                shifted = chr(((ord(char) - ord('A') - (ord(key[key_index % len(key)].upper()) - ord('A')) + 26) % 26) + ord('A'))
+            else:
+                shifted = chr(((ord(char) - ord('a') - (ord(key[key_index % len(key)].lower()) - ord('a')) + 26) % 26) + ord('a'))
+            key_index += 1
+        else:
+            shifted = char
+        plaintext += shifted
+    return plaintext
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    key = input("Enter key (only alphabetic characters): ")
+
+
+    encrypted_text = encrypt(plaintext, key)
+    print("Encrypted text:", encrypted_text)
+
+
+    decrypted_text = decrypt(encrypted_text, key)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+Payfair:
+C++:
+#include <iostream>
+#include <string>
+#include <vector>
+
+
+using namespace std;
+
+
+// Function to preprocess the key and generate the Playfair matrix
+vector<vector<char>> generatePlayfairMatrix(string key) {
+    vector<vector<char>> matrix(5, vector<char>(5, ' '));
+    string keyWithoutDuplicates = "";
+
+
+    // Remove duplicate characters from the key
+    for (char c : key) {
+        if (c != ' ' && keyWithoutDuplicates.find(c) == string::npos)
+            keyWithoutDuplicates += c;
+    }
+
+
+    // Fill the matrix with the key
+    int row = 0, col = 0;
+    for (char c : keyWithoutDuplicates) {
+        matrix[row][col] = c;
+        col++;
+        if (col == 5) {
+            col = 0;
+            row++;
+        }
+    }
+
+
+    // Fill the remaining cells with the alphabet (excluding 'J')
+    char currentChar = 'A';
+    while (row < 5) {
+        if (currentChar != 'J' && keyWithoutDuplicates.find(currentChar) == string::npos) {
+            matrix[row][col] = currentChar;
+            col++;
+            if (col == 5) {
+                col = 0;
+                row++;
+            }
+        }
+        currentChar++;
+    }
+
+
+    return matrix;
+}
+
+
+// Function to find the positions of two characters in the Playfair matrix
+pair<pair<int, int>, pair<int, int>> findPositions(vector<vector<char>>& matrix, char a, char b) {
+    pair<pair<int, int>, pair<int, int>> positions;
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            if (matrix[i][j] == a) {
+                positions.first = make_pair(i, j);
+            } else if (matrix[i][j] == b) {
+                positions.second = make_pair(i, j);
+            }
+        }
+    }
+    return positions;
+}
+
+
+// Function to encrypt plaintext using the Playfair cipher
+string encrypt(string plaintext, vector<vector<char>>& matrix) {
+    string ciphertext = "";
+    // Remove spaces and convert to uppercase
+    string processedText = "";
+    for (char c : plaintext) {
+        if (isalpha(c)) {
+            processedText += toupper(c);
+        }
+    }
+    // Handle 'J' by replacing it with 'I'
+    for (char& c : processedText) {
+        if (c == 'J') {
+            c = 'I';
+        }
+    }
+    // Adjust plaintext length to be even by adding 'X' at the end if necessary
+    if (processedText.length() % 2 != 0) {
+        processedText += 'X';
+    }
+    // Encrypt pairs of characters
+    for (int i = 0; i < processedText.length(); i += 2) {
+        char a = processedText[i];
+        char b = processedText[i + 1];
+        pair<pair<int, int>, pair<int, int>> positions = findPositions(matrix, a, b);
+        if (positions.first.first == positions.second.first) { // Same row
+            ciphertext += matrix[positions.first.first][(positions.first.second + 1) % 5];
+            ciphertext += matrix[positions.second.first][(positions.second.second + 1) % 5];
+        } else if (positions.first.second == positions.second.second) { // Same column
+            ciphertext += matrix[(positions.first.first + 1) % 5][positions.first.second];
+            ciphertext += matrix[(positions.second.first + 1) % 5][positions.second.second];
+        } else { // Forming a rectangle
+            ciphertext += matrix[positions.first.first][positions.second.second];
+            ciphertext += matrix[positions.second.first][positions.first.second];
+        }
+    }
+    return ciphertext;
+}
+
+
+// Function to decrypt ciphertext using the Playfair cipher
+string decrypt(string ciphertext, vector<vector<char>>& matrix) {
+    string plaintext = "";
+    // Decrypt pairs of characters
+    for (int i = 0; i < ciphertext.length(); i += 2) {
+        char a = ciphertext[i];
+        char b = ciphertext[i + 1];
+        pair<pair<int, int>, pair<int, int>> positions = findPositions(matrix, a, b);
+        if (positions.first.first == positions.second.first) { // Same row
+            plaintext += matrix[positions.first.first][(positions.first.second + 4) % 5];
+            plaintext += matrix[positions.second.first][(positions.second.second + 4) % 5];
+        } else if (positions.first.second == positions.second.second) { // Same column
+            plaintext += matrix[(positions.first.first + 4) % 5][positions.first.second];
+            plaintext += matrix[(positions.second.first + 4) % 5][positions.second.second];
+        } else { // Forming a rectangle
+            plaintext += matrix[positions.first.first][positions.second.second];
+            plaintext += matrix[positions.second.first][positions.first.second];
+        }
+    }
+    return plaintext;
+}
+
+
+int main() {
+    string key, plaintext;
+
+
+    cout << "Enter key (without spaces): ";
+    cin >> key;
+    cout << "Enter plaintext: ";
+    cin.ignore(); // Clear the input buffer
+    getline(cin, plaintext);
+
+
+    // Generate Playfair matrix from the key
+    vector<vector<char>> matrix = generatePlayfairMatrix(key);
+
+
+    // Encrypt plaintext
+    string encrypted_text = encrypt(plaintext, matrix);
+    cout << "Encrypted text: " << encrypted_text << endl;
+
+
+    // Decrypt ciphertext
+    string decrypted_text = decrypt(encrypted_text, matrix);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def generate_playfair_matrix(key):
+    key = key.replace(" ", "").upper()
+    key_without_duplicates = ""
+    for char in key:
+        if char not in key_without_duplicates:
+            key_without_duplicates += char
+    
+    matrix = [[' ' for _ in range(5)] for _ in range(5)]
+    key_index = 0
+
+
+    # Fill the matrix with the key
+    for i in range(5):
+        for j in range(5):
+            if key_index < len(key_without_duplicates):
+                matrix[i][j] = key_without_duplicates[key_index]
+                key_index += 1
+    
+    # Fill the remaining cells with the alphabet (excluding 'J')
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    alphabet_index = 0
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == ' ':
+                while alphabet[alphabet_index] in key_without_duplicates:
+                    alphabet_index += 1
+                matrix[i][j] = alphabet[alphabet_index]
+                alphabet_index += 1
+    
+    return matrix
+
+
+def find_positions(matrix, a, b):
+    pos_a = None
+    pos_b = None
+    for i in range(5):
+        for j in range(5):
+            if matrix[i][j] == a:
+                pos_a = (i, j)
+            elif matrix[i][j] == b:
+                pos_b = (i, j)
+    return pos_a, pos_b
+
+
+def encrypt(plaintext, matrix):
+    ciphertext = ""
+    # Preprocess the plaintext
+    plaintext = plaintext.upper().replace(" ", "").replace("J", "I")
+    # Adjust plaintext length to be even by adding 'X' at the end if necessary
+    if len(plaintext) % 2 != 0:
+        plaintext += 'X'
+
+
+    # Encrypt pairs of characters
+    for i in range(0, len(plaintext), 2):
+        a = plaintext[i]
+        b = plaintext[i + 1]
+        pos_a, pos_b = find_positions(matrix, a, b)
+        if pos_a[0] == pos_b[0]:  # Same row
+            ciphertext += matrix[pos_a[0]][(pos_a[1] + 1) % 5]
+            ciphertext += matrix[pos_b[0]][(pos_b[1] + 1) % 5]
+        elif pos_a[1] == pos_b[1]:  # Same column
+            ciphertext += matrix[(pos_a[0] + 1) % 5][pos_a[1]]
+            ciphertext += matrix[(pos_b[0] + 1) % 5][pos_b[1]]
+        else:  # Forming a rectangle
+            ciphertext += matrix[pos_a[0]][pos_b[1]]
+            ciphertext += matrix[pos_b[0]][pos_a[1]]
+
+
+    return ciphertext
+
+
+def decrypt(ciphertext, matrix):
+    plaintext = ""
+    # Decrypt pairs of characters
+    for i in range(0, len(ciphertext), 2):
+        a = ciphertext[i]
+        b = ciphertext[i + 1]
+        pos_a, pos_b = find_positions(matrix, a, b)
+        if pos_a[0] == pos_b[0]:  # Same row
+            plaintext += matrix[pos_a[0]][(pos_a[1] - 1) % 5]
+            plaintext += matrix[pos_b[0]][(pos_b[1] - 1) % 5]
+        elif pos_a[1] == pos_b[1]:  # Same column
+            plaintext += matrix[(pos_a[0] - 1) % 5][pos_a[1]]
+            plaintext += matrix[(pos_b[0] - 1) % 5][pos_b[1]]
+        else:  # Forming a rectangle
+            plaintext += matrix[pos_a[0]][pos_b[1]]
+            plaintext += matrix[pos_b[0]][pos_a[1]]
+
+
+    return plaintext
+
+
+def main():
+    key = input("Enter key (without spaces): ")
+    plaintext = input("Enter plaintext: ")
+
+
+    # Generate Playfair matrix from the key
+    matrix = generate_playfair_matrix(key)
+
+
+    # Encrypt plaintext
+    encrypted_text = encrypt(plaintext, matrix)
+    print("Encrypted text:", encrypted_text)
+
+
+    # Decrypt ciphertext
+    decrypted_text = decrypt(encrypted_text, matrix)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+Vignere:
+C++:
+#include <iostream>
+#include <string>
+
+
+using namespace std;
+
+
+string encrypt(string plaintext, string key) {
+    string ciphertext = "";
+    int keyLength = key.length();
+    for (int i = 0, j = 0; i < plaintext.length(); ++i) {
+        char c = plaintext[i];
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            ciphertext += (char)(((c + key[j % keyLength] - 2 * base) % 26) + base);
+            j++;
+        } else {
+            ciphertext += c;
+        }
+    }
+    return ciphertext;
+}
+
+
+string decrypt(string ciphertext, string key) {
+    string plaintext = "";
+    int keyLength = key.length();
+    for (int i = 0, j = 0; i < ciphertext.length(); ++i) {
+        char c = ciphertext[i];
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            plaintext += (char)(((c - key[j % keyLength] + 26) % 26) + base);
+            j++;
+        } else {
+            plaintext += c;
+        }
+    }
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext, key;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+    
+    cout << "Enter key: ";
+    cin >> key;
+
+
+    string encrypted_text = encrypt(plaintext, key);
+    cout << "Encrypted text: " << encrypted_text << endl;
+
+
+    string decrypted_text = decrypt(encrypted_text, key);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def encrypt(plaintext, key):
+    ciphertext = ""
+    key_length = len(key)
+    for i in range(len(plaintext)):
+        char = plaintext[i]
+        if char.isalpha():
+            base = ord('A') if char.isupper() else ord('a')
+            shift = ord(key[i % key_length].upper()) - ord('A')
+            ciphertext += chr(((ord(char) - base + shift) % 26) + base)
+        else:
+            ciphertext += char
+    return ciphertext
+
+
+def decrypt(ciphertext, key):
+    plaintext = ""
+    key_length = len(key)
+    for i in range(len(ciphertext)):
+        char = ciphertext[i]
+        if char.isalpha():
+            base = ord('A') if char.isupper() else ord('a')
+            shift = ord(key[i % key_length].upper()) - ord('A')
+            plaintext += chr(((ord(char) - base - shift + 26) % 26) + base)
+        else:
+            plaintext += char
+    return plaintext
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    key = input("Enter key: ")
+
+
+    encrypted_text = encrypt(plaintext, key)
+    print("Encrypted text:", encrypted_text)
+
+
+    decrypted_text = decrypt(encrypted_text, key)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+Column Transposition:
+C++:
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+
+using namespace std;
+
+
+// Function to encrypt plaintext using Column Transposition cipher
+string encrypt(string plaintext, int numRows) {
+    int numCols = (plaintext.length() + numRows - 1) / numRows;
+    vector<vector<char>> grid(numRows, vector<char>(numCols, ' '));
+    int index = 0;
+    
+    // Fill the grid column-wise
+    for (int j = 0; j < numCols; ++j) {
+        for (int i = 0; i < numRows; ++i) {
+            if (index < plaintext.length())
+                grid[i][j] = plaintext[index++];
+            else
+                grid[i][j] = ' ';
+        }
+    }
+    
+    // Read the grid row-wise to generate ciphertext
+    string ciphertext = "";
+    for (int i = 0; i < numRows; ++i) {
+        for (int j = 0; j < numCols; ++j) {
+            ciphertext += grid[i][j];
+        }
+    }
+    
+    return ciphertext;
+}
+
+
+// Function to decrypt ciphertext using Column Transposition cipher
+string decrypt(string ciphertext, int numRows) {
+    int numCols = (ciphertext.length() + numRows - 1) / numRows;
+    vector<vector<char>> grid(numRows, vector<char>(numCols, ' '));
+    int index = 0;
+    
+    // Fill the grid row-wise
+    for (int i = 0; i < numRows; ++i) {
+        for (int j = 0; j < numCols; ++j) {
+            grid[i][j] = ciphertext[index++];
+        }
+    }
+    
+    // Read the grid column-wise to generate plaintext
+    string plaintext = "";
+    for (int j = 0; j < numCols; ++j) {
+        for (int i = 0; i < numRows; ++i) {
+            plaintext += grid[i][j];
+        }
+    }
+
+
+    // Remove trailing spaces
+    plaintext.erase(remove(plaintext.begin(), plaintext.end(), ' '), plaintext.end());
+    
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext, ciphertext;
+    int numRows;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+
+
+    cout << "Enter number of rows: ";
+    cin >> numRows;
+
+
+    // Encrypt plaintext
+    ciphertext = encrypt(plaintext, numRows);
+    cout << "Encrypted text: " << ciphertext << endl;
+
+
+    // Decrypt ciphertext
+    string decrypted_text = decrypt(ciphertext, numRows);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def encrypt(plaintext, num_rows):
+    num_cols = (len(plaintext) + num_rows - 1) // num_rows
+    grid = [[' ' for _ in range(num_cols)] for _ in range(num_rows)]
+    index = 0
+    
+    # Fill the grid column-wise
+    for j in range(num_cols):
+        for i in range(num_rows):
+            if index < len(plaintext):
+                grid[i][j] = plaintext[index]
+                index += 1
+            else:
+                break
+    
+    # Read the grid row-wise to generate ciphertext
+    ciphertext = ""
+    for i in range(num_rows):
+        for j in range(num_cols):
+            ciphertext += grid[i][j]
+    
+    return ciphertext
+
+
+def decrypt(ciphertext, num_rows):
+    num_cols = (len(ciphertext) + num_rows - 1) // num_rows
+    grid = [[' ' for _ in range(num_cols)] for _ in range(num_rows)]
+    index = 0
+    
+    # Fill the grid row-wise
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if index < len(ciphertext):
+                grid[i][j] = ciphertext[index]
+                index += 1
+            else:
+                break
+    
+    # Read the grid column-wise to generate plaintext
+    plaintext = ""
+    for j in range(num_cols):
+        for i in range(num_rows):
+            plaintext += grid[i][j]
+    
+    return plaintext.replace(' ', '')
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    num_rows = int(input("Enter number of rows: "))
+
+
+    # Encrypt plaintext
+    ciphertext = encrypt(plaintext, num_rows)
+    print("Encrypted text:", ciphertext)
+
+
+    # Decrypt ciphertext
+    decrypted_text = decrypt(ciphertext, num_rows)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+Row Transposition:
+C++:
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+
+using namespace std;
+
+
+// Function to encrypt plaintext using Row Transposition cipher
+string encrypt(string plaintext, int numCols) {
+    int numRows = (plaintext.length() + numCols - 1) / numCols;
+    vector<vector<char>> grid(numRows, vector<char>(numCols, ' '));
+    int index = 0;
+    
+    // Fill the grid row-wise
+    for (int i = 0; i < numRows; ++i) {
+        for (int j = 0; j < numCols; ++j) {
+            if (index < plaintext.length())
+                grid[i][j] = plaintext[index++];
+            else
+                grid[i][j] = ' ';
+        }
+    }
+    
+    // Read the grid column-wise to generate ciphertext
+    string ciphertext = "";
+    for (int j = 0; j < numCols; ++j) {
+        for (int i = 0; i < numRows; ++i) {
+            ciphertext += grid[i][j];
+        }
+    }
+    
+    return ciphertext;
+}
+
+
+// Function to decrypt ciphertext using Row Transposition cipher
+string decrypt(string ciphertext, int numCols) {
+    int numRows = (ciphertext.length() + numCols - 1) / numCols;
+    vector<vector<char>> grid(numRows, vector<char>(numCols, ' '));
+    int index = 0;
+    
+    // Fill the grid column-wise
+    for (int j = 0; j < numCols; ++j) {
+        for (int i = 0; i < numRows; ++i) {
+            grid[i][j] = ciphertext[index++];
+        }
+    }
+    
+    // Read the grid row-wise to generate plaintext
+    string plaintext = "";
+    for (int i = 0; i < numRows; ++i) {
+        for (int j = 0; j < numCols; ++j) {
+            plaintext += grid[i][j];
+        }
+    }
+
+
+    // Remove trailing spaces
+    plaintext.erase(remove(plaintext.begin(), plaintext.end(), ' '), plaintext.end());
+    
+    return plaintext;
+}
+
+
+int main() {
+    string plaintext, ciphertext;
+    int numCols;
+
+
+    cout << "Enter plaintext: ";
+    getline(cin, plaintext);
+
+
+    cout << "Enter number of columns: ";
+    cin >> numCols;
+
+
+    // Encrypt plaintext
+    ciphertext = encrypt(plaintext, numCols);
+    cout << "Encrypted text: " << ciphertext << endl;
+
+
+    // Decrypt ciphertext
+    string decrypted_text = decrypt(ciphertext, numCols);
+    cout << "Decrypted text: " << decrypted_text << endl;
+
+
+    return 0;
+}
+
+
+Python:
+def encrypt(plaintext, num_cols):
+    num_rows = (len(plaintext) + num_cols - 1) // num_cols
+    grid = [[' ' for _ in range(num_cols)] for _ in range(num_rows)]
+    index = 0
+    
+    # Fill the grid row-wise
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if index < len(plaintext):
+                grid[i][j] = plaintext[index]
+                index += 1
+            else:
+                break
+    
+    # Read the grid column-wise to generate ciphertext
+    ciphertext = ""
+    for j in range(num_cols):
+        for i in range(num_rows):
+            ciphertext += grid[i][j]
+    
+    return ciphertext
+
+
+def decrypt(ciphertext, num_cols):
+    num_rows = (len(ciphertext) + num_cols - 1) // num_cols
+    grid = [[' ' for _ in range(num_cols)] for _ in range(num_rows)]
+    index = 0
+    
+    # Fill the grid column-wise
+    for j in range(num_cols):
+        for i in range(num_rows):
+            if index < len(ciphertext):
+                grid[i][j] = ciphertext[index]
+                index += 1
+            else:
+                break
+    
+    # Read the grid row-wise to generate plaintext
+    plaintext = ""
+    for i in range(num_rows):
+        for j in range(num_cols):
+            plaintext += grid[i][j]
+    
+    return plaintext.replace(' ', '')
+
+
+def main():
+    plaintext = input("Enter plaintext: ")
+    num_cols = int(input("Enter number of columns: "))
+
+
+    # Encrypt plaintext
+    ciphertext = encrypt(plaintext, num_cols)
+    print("Encrypted text:", ciphertext)
+
+
+    # Decrypt ciphertext
+    decrypted_text = decrypt(ciphertext, num_cols)
+    print("Decrypted text:", decrypted_text)
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+RSA C++:
+
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+int gcd(int a, int b){
+    int t;
+    while(1){
+        t = a%b;
+        if(t==0){
+            return b;
+        }
+        a = b;
+        b = t;
+    }
+}
+
+
+int main(){
+    double p = 5;
+    double q = 13;
+    double n = p*q;
+    double track;
+    double phi = (p-1)*(q-1);
+    double e = 13;
+    while(e<phi){
+        track = gcd(e,phi);
+        if(track == 1){
+            break;
+        }
+        else{
+            e++;
+        }
+    }
+    double d1 = 1/e;
+    double d = fmod(d1,phi);
+    double message = 9;
+    double c = pow(message,e); //encryption
+    double m = pow(c,d);
+    c = fmod(c,n);
+    m = fmod(m,n);
+    cout << "Original Message = " << message;
+    cout << "\n" << "p=" << p;
+    cout << "\n" << "q=" << q;
+    cout << "\n" << "phi=" << phi;
+    cout << "\n" << "e=" << e;
+    cout << "\n" << "d=" << d;
+    cout << "\n" << "Encrypted message =" << c;
+    cout <<"\n" << "Decrypted message =" << m;
+}
+
+
+
+
+
+
+
+
+Hashing Algo:
+Python:
+
+
+import struct
+
+
+def md5_padding(message):
+    message += b'\x80'  # Appending the padding bit '1'
+    while (len(message) * 8) % 512 != 448:
+        message += b'\x00'  # Padding with zeros until reaching 448 bits
+    message += struct.pack('<Q', (8 * len(message)))  # Appending the length of the original message in bits
+    return message
+
+
+def left_rotate(value, shift):
+    return ((value << shift) | (value >> (32 - shift))) & 0xFFFFFFFF
+
+
+def md5_rounds(chunk, h_values):
+    constants = [
+        0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476
+    ]
+    functions = [
+        lambda b, c, d: (b & c) | (~b & d),
+        lambda b, c, d: (d & b) | (~d & c),
+        lambda b, c, d: b ^ c ^ d,
+        lambda b, c, d: c ^ (b | ~d)
+    ]
+    shifts = [
+        [7, 12, 17, 22],
+        [5, 9, 14, 20],
+        [4, 11, 16, 23],
+        [6, 10, 15, 21]
+    ]
+    a, b, c, d = h_values
+    for i in range(4):
+        f = functions[i]
+        g = (i * 4) % 16
+
+
+        a = (b + left_rotate((a + f(b, c, d) + struct.unpack('<I', chunk[g * 4:g * 4 + 4])[0] + constants[i]), shifts[i][0])) & 0xFFFFFFFF
+        a, b, c, d = d, a, b, c
+    h_values = [(x + y) & 0xFFFFFFFF for x, y in zip(h_values, [a, b, c, d])]
+    return h_values
+
+
+def md5(message):
+    h_values = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476]
+    padded_message = md5_padding(message)
+    for i in range(0, len(padded_message), 64):
+        chunk = padded_message[i:i + 64]
+        h_values = md5_rounds(chunk, h_values)
+    digest = ''.join(format(value, '08x') for value in h_values)
+    return digest
+
+
+input_text = "Hello, tcet!"
+hashed_result = md5(input_text.encode('utf-8'))
+
+
+output_text = input_text
+
+
+print(f"Plain Text: {input_text}")
+print(f"MD5 Hash: {hashed_result}")
+print(f"Decrypted Text: {output_text}")
+
+
+C++:
+#include <iostream>
+#include <string>
+#include <vector>
+
+
+using namespace std;
+
+
+vector<unsigned char> md5_padding(vector<unsigned char>& message) {
+    message.push_back(0x80); // Appending the padding bit '1'
+    while ((message.size() * 8) % 512 != 448) {
+        message.push_back(0x00); // Padding with zeros until reaching 448 bits
+    }
+    unsigned long long message_length_bits = message.size() * 8;
+    for (int i = 0; i < 8; ++i) {
+        message.push_back((message_length_bits >> (i * 8)) & 0xFF); // Appending the length of the original message in bits
+    }
+    return message;
+}
+
+
+unsigned int left_rotate(unsigned int value, int shift) {
+    return ((value << shift) | (value >> (32 - shift))) & 0xFFFFFFFF;
+}
+
+
+vector<unsigned int> md5_rounds(vector<unsigned char>& chunk, vector<unsigned int>& h_values) {
+    vector<unsigned int> constants = {
+        0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476
+    };
+    vector<unsigned int> shifts[4] = {
+        {7, 12, 17, 22},
+        {5, 9, 14, 20},
+        {4, 11, 16, 23},
+        {6, 10, 15, 21}
+    };
+    unsigned int a = h_values[0], b = h_values[1], c = h_values[2], d = h_values[3];
+    for (int i = 0; i < 4; ++i) {
+        auto f = [=](unsigned int b, unsigned int c, unsigned int d) -> unsigned int {
+            switch (i) {
+                case 0:
+                    return (b & c) | (~b & d);
+                case 1:
+                    return (d & b) | (~d & c);
+                case 2:
+                    return b ^ c ^ d;
+                case 3:
+                    return c ^ (b | ~d);
+                default:
+                    return 0;
+            }
+        };
+        int g = (i * 4) % 16;
+        a = (b + left_rotate((a + f(b, c, d) + *((unsigned int*)&chunk[g * 4]) + constants[i]), shifts[i][0])) & 0xFFFFFFFF;
+        swap(a, b);
+        swap(b, c);
+        swap(c, d);
+    }
+    h_values[0] = (h_values[0] + a) & 0xFFFFFFFF;
+    h_values[1] = (h_values[1] + b) & 0xFFFFFFFF;
+    h_values[2] = (h_values[2] + c) & 0xFFFFFFFF;
+    h_values[3] = (h_values[3] + d) & 0xFFFFFFFF;
+    return h_values;
+}
+
+
+string md5(string message) {
+    vector<unsigned int> h_values = {0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476};
+    vector<unsigned char> padded_message(message.begin(), message.end());
+    padded_message = md5_padding(padded_message);
+    for (size_t i = 0; i < padded_message.size(); i += 64) {
+        vector<unsigned char> chunk(padded_message.begin() + i, padded_message.begin() + i + 64);
+        h_values = md5_rounds(chunk, h_values);
+    }
+    string digest;
+    for (unsigned int value : h_values) {
+        digest += to_string(value >> 24 & 0xFF) + to_string(value >> 16 & 0xFF) + to_string(value >> 8 & 0xFF) + to_string(value & 0xFF);
+    }
+    return digest;
+}
+
+
+int main() {
+    string input_text = "Hello, tcet!";
+    string hashed_result = md5(input_text);
+
+
+    string output_text = input_text;
+
+
+    cout << "Plain Text: " << input_text << endl;
+    cout << "MD5 Hash: " << hashed_result << endl;
+    cout << "Decrypted Text: " << output_text << endl;
+
+
+    return 0;
+}
